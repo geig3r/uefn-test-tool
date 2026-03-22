@@ -7,6 +7,7 @@ init_unreal.py.
 """
 
 import unreal
-from uefn_test_tool import texture_picker
+from uefn_test_tool import texture_picker, asset_browser
 
 texture_picker.register_menu_entries()
+asset_browser.register_menu_entries()
