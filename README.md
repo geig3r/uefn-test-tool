@@ -12,27 +12,29 @@ Open your project, then:
 
 - **Edit → Editor Preferences → Experimental** → enable **Python Editor Script Plugin** → restart UEFN
 
-### 2. Copy the Python files into your project
+### 2. Clone into your project
 
-Copy `uefn_test_tool/` into your project's `Content/Python/` folder:
+Clone this repo **as `uefn_test_tool`** (the folder name must be a valid Python identifier — no hyphens):
+
+```
+cd YourProject/Content/Python
+git clone https://github.com/geig3r/uefn-test-tool.git uefn_test_tool
+```
+
+Result:
 
 ```
 YourProject/
 └── Content/
     └── Python/
         ├── init_unreal.py          ← see note below
-        └── uefn_test_tool/
+        └── uefn_test_tool/         ← cloned here
             ├── __init__.py
             ├── texture_picker.py
             └── asset_browser.py
 ```
 
-> **`init_unreal.py` — don't overwrite if you already have one.** If `Content/Python/init_unreal.py` already exists in your project (e.g. from another tool), add these two lines to it instead of replacing it:
-> ```python
-> from uefn_test_tool import texture_picker, asset_browser
-> texture_picker.register_menu_entries()
-> asset_browser.register_menu_entries()
-> ```
+> **`init_unreal.py`** — the generic loader from the reference project works automatically. If you already have one, make sure it scans for packages with `register()` — ours exposes that and will be picked up.
 
 ### 3. Restart UEFN
 
