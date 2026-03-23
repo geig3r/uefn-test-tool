@@ -13,7 +13,7 @@ import subprocess
 import tkinter as tk
 import unreal
 
-from texture_picker import _copy_to_clipboard
+from uefn_test_tool.texture_picker import _copy_to_clipboard
 
 # ---------------------------------------------------------------------------
 # Category definitions: display name → Content Browser path
@@ -284,7 +284,10 @@ def register_menu_entries():
     entry.set_string_command(
         type=unreal.ToolMenuStringCommandType.PYTHON,
         custom_type="",
-        string="import asset_browser; asset_browser.open_asset_browser()",
+        string=(
+            "from uefn_test_tool import asset_browser; "
+            "asset_browser.open_asset_browser()"
+        ),
     )
     section.add_entry(entry)
 

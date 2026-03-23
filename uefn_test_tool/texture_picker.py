@@ -96,7 +96,10 @@ def register_menu_entries():
     entry.set_string_command(
         type=unreal.ToolMenuStringCommandType.PYTHON,
         custom_type="",
-        string="import texture_picker; texture_picker.copy_selected_asset_name()",
+        string=(
+            "from uefn_test_tool import texture_picker; "
+            "texture_picker.copy_selected_asset_name()"
+        ),
     )
     section.add_entry(entry)
 
