@@ -2,7 +2,7 @@
 UEFN Test Tool - Editor startup script.
 
 This file is automatically executed by Unreal Engine when the editor loads
-because it lives in a plugin's Content/Python/ directory and is named
+because it lives in the project's Content/Python/ directory and is named
 init_unreal.py.
 """
 

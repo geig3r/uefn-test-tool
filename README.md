@@ -10,7 +10,7 @@ Editor utilities to speed up UEFN development workflows.
 
 Open your project, then:
 
-- **Project Settings** → search `Python` → enable **Python Editor Script Plugin** → restart UEFN
+- **Edit → Editor Preferences → Experimental** → enable **Python Editor Script Plugin** → restart UEFN
 
 ### 2. Copy the Python files into your project
 
@@ -61,3 +61,5 @@ Browse built-in Fortnite assets by category with a searchable list.
 - **Export to CSV** — saves the full category list for use in spreadsheets
 
 > **Note:** The category paths (e.g. `/Fortnite/Weapons`) may need to be adjusted to match your project's actual asset structure. Edit `CATEGORIES` in `asset_browser.py` if assets aren't showing up.
+
+> **UI framework note:** The Asset Browser uses PySide6. If it fails to open, Tkinter is the confirmed-working alternative in UEFN 40.00 (used by [uefn-device-graph](https://github.com/ImmatureGamer/uefn-device-graph)). A Tkinter version may be added in a future release.
