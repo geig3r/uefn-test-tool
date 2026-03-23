@@ -13,11 +13,11 @@ import tempfile
 import unreal
 
 try:
-    from PySide2 import QtWidgets, QtCore, QtGui
-    from PySide2.QtCore import Qt
-except ImportError:
     from PySide6 import QtWidgets, QtCore, QtGui
     from PySide6.QtCore import Qt
+except ImportError:
+    from PySide2 import QtWidgets, QtCore, QtGui
+    from PySide2.QtCore import Qt
 
 from uefn_test_tool.texture_picker import _copy_to_clipboard
 
