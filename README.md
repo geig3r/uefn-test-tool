@@ -14,18 +14,25 @@ Open your project, then:
 
 ### 2. Copy the Python files into your project
 
-Copy the contents of `Content/Python/` from this repo into your project's `Content/Python/` folder:
+Copy `uefn_test_tool/` into your project's `Content/Python/` folder:
 
 ```
 YourProject/
 └── Content/
     └── Python/
-        ├── init_unreal.py          ← auto-runs at editor startup
+        ├── init_unreal.py          ← see note below
         └── uefn_test_tool/
             ├── __init__.py
             ├── texture_picker.py
             └── asset_browser.py
 ```
+
+> **`init_unreal.py` — don't overwrite if you already have one.** If `Content/Python/init_unreal.py` already exists in your project (e.g. from another tool), add these two lines to it instead of replacing it:
+> ```python
+> from uefn_test_tool import texture_picker, asset_browser
+> texture_picker.register_menu_entries()
+> asset_browser.register_menu_entries()
+> ```
 
 ### 3. Restart UEFN
 
