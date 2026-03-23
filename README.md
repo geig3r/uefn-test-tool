@@ -1,127 +1,74 @@
-# uefn-test-tool
+# UEFN Test Tool
 
-A minimal **UEFN-ready** Python package example designed to be **checked out directly into a project's `Content/Python/` directory**.
+Editor utilities to speed up UEFN development workflows.
 
-## Exact repo structure
+> **Requires UEFN 40.00 or later** — Python scripting was added as an experimental feature in the March 19, 2026 release.
 
-This repository currently contains these top-level files and folders:
+## Installation
 
-```text
-<YourProject>/Content/Python/
-  .gitignore
-  README.md
-  init_unreal.py
-  pyproject.toml
-  src/
-    uefn_tooling/
-      __init__.py
-      cli.py
-      config.py
-      uefn.py
-  tests/
-    test_loader.py
-    test_tooling.py
-  uefn_test_tool/
-    __init__.py
-    menu.py
+### 1. Enable Python in UEFN
+
+Open your project, then:
+
+- **Edit → Editor Preferences → Experimental** → enable **Python Editor Script Plugin** → restart UEFN
+
+### 2. Clone into your project
+
+Clone this repo **as `uefn_test_tool`** (the folder name must be a valid Python identifier — no hyphens):
+
+```
+cd YourProject/Content/Python
+git clone https://github.com/geig3r/uefn-test-tool.git uefn_test_tool
 ```
 
-So to be explicit: **`uefn_test_tool/` contains both `__init__.py` and `menu.py`.**
+Result:
 
-## Runtime-relevant files
-
-Unreal only cares about these files for startup registration:
-
-```text
-<YourProject>/Content/Python/
-  init_unreal.py
-  uefn_test_tool/
-    __init__.py
-    menu.py
+```
+YourProject/
+└── Content/
+    └── Python/
+        ├── init_unreal.py          ← see note below
+        └── uefn_test_tool/         ← cloned here
+            ├── __init__.py
+            ├── texture_picker.py
+            └── asset_browser.py
 ```
 
-The other files (`README.md`, `src/`, `tests/`, `pyproject.toml`) are there for development/documentation and do not participate in editor auto-loading.
+> **`init_unreal.py`** — the generic loader from the reference project works automatically. If you already have one, make sure it scans for packages with `register()` — ours exposes that and will be picked up.
 
-## Why the repo layout changed
+### 3. Restart UEFN
 
-The previous layout nested the runtime under `Content/Python/` *inside the repo*. That is awkward if you want to:
-
-- clone the repo directly into `<YourProject>/Content/Python/`,
-- run `git pull` from inside that Python directory,
-- keep the Python tool as its own checkout inside the project.
-
-With the new layout, the **repo root is the Python directory**.
-
-## Why it still would not register before
-
-Unreal's startup behavior is:
-
-1. execute `init_unreal.py` inside `Content/Python/`,
-2. scan subfolders inside that same directory,
-3. import package folders that contain `__init__.py`,
-4. call `register()` if the package exposes it.
-
-So the repo must line up with the **actual on-disk `Content/Python` layout**.
-
-## What each runtime file does
-
-### `init_unreal.py`
-
-This is the generic startup loader. Unreal executes it automatically. It:
-
-- treats the directory containing `init_unreal.py` as the active Python root,
-- adds that directory to `sys.path`,
-- scans package directories,
-- imports them,
-- calls `register()` if present.
-
-### `uefn_test_tool/__init__.py`
-
-This is the discoverable package entry point. It exports:
-
-- `register()` for startup initialization,
-- `describe_environment()` for logging project paths.
-
-### `uefn_test_tool/menu.py`
-
-This defers menu creation until the first Slate tick, then adds a small `UEFN Test Tool` submenu under `LevelEditor.MainMenu`.
-
-## Checkout / pull workflow
-
-If your real project is at:
-
-```text
-D:/Projects/MyIsland/
+Check the **Output Log** (Window → Output Log) for:
+```
+[UEFN Test Tool] Menus registered.
 ```
 
-then the intended workflow is:
+If you see that, everything is working.
 
-```bash
-cd D:/Projects/MyIsland/Content/Python
-git clone <this-repo> .
-# later
-cd D:/Projects/MyIsland/Content/Python
-git pull
-```
+## Tools
 
-## Expected log output
+### Copy Asset Name
 
-On a successful startup, you should see something like:
+Replaces the manual workflow of:
+> Reference Viewer → Show Asset Path → copy last element
 
-```text
-[UEFN Test Tool] Registering package v0.3.0.
-[UEFN Test Tool] Environment: {...}
-[UEFN Test Tool] Menu registration scheduled.
-[LOADER] ✓ 1 package(s) registered: uefn_test_tool
-```
+**Usage:** Right-click any asset in the Content Browser → **UEFN Test Tools → Copy Asset Name**
 
-And once the menu is built:
+The short asset name (e.g. `T_WeapRifle`) is copied to your clipboard.
 
-```text
-[UEFN Test Tool] Menu registered under LevelEditor.MainMenu.
-```
+---
 
-## Reference reviewed
+### Asset Browser
 
-- Example repo: <https://github.com/undergroundrap/UEFN-TOOLBELT>
-- Example generic loader: <https://raw.githubusercontent.com/undergroundrap/UEFN-TOOLBELT/main/init_unreal.py>
+Browse built-in Fortnite assets by category with a searchable list.
+
+**Usage:** Tools → UEFN Test Tools → Open Asset Browser
+
+- Select a category (Weapons, Items, Characters, etc.)
+- Filter by name
+- Click to select, double-click to copy asset name
+- **Export to CSV** — saves the full category list for use in spreadsheets
+
+> **Note:** The category paths (e.g. `/Fortnite/Weapons`) may need to be adjusted to match your project's actual asset structure. Edit `CATEGORIES` in `asset_browser.py` if assets aren't showing up.
+
+> **UI framework:** The Asset Browser uses Tkinter (Python standard library), the same approach used by [uefn-device-graph](https://github.com/ImmatureGamer/uefn-device-graph). No extra dependencies required.
