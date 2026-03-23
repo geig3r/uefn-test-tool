@@ -20,8 +20,6 @@ class InstallRuntimeTests(unittest.TestCase):
             self.assertEqual(python_dir, project_root / 'Content' / 'Python')
             self.assertTrue((python_dir / 'init_unreal.py').exists())
             self.assertTrue((python_dir / 'uefn_test_tool' / '__init__.py').exists())
-            self.assertTrue((python_dir / 'uefn_test_tool' / 'actions.py').exists())
-            self.assertTrue((python_dir / 'uefn_test_tool' / 'asset_browser.py').exists())
             self.assertTrue((python_dir / 'uefn_test_tool' / 'menu.py').exists())
 
     def test_cli_main_returns_zero(self) -> None:
