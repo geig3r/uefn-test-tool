@@ -13,7 +13,7 @@ import subprocess
 import tkinter as tk
 import unreal
 
-from uefn_test_tool.texture_picker import _copy_to_clipboard
+from .texture_picker import _copy_to_clipboard
 
 # ---------------------------------------------------------------------------
 # Category definitions: display name → Content Browser path
