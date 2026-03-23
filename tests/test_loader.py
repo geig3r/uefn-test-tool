@@ -28,11 +28,22 @@ class FakeToolMenuEntry:
         self.command = (command_type, custom_type, string)
 
 
-class FakeMainMenu:
+class FakeSubMenu:
     def __init__(self) -> None:
         self.entries: list[tuple[str, FakeToolMenuEntry]] = []
+
     def add_menu_entry(self, section_name: str, entry: FakeToolMenuEntry) -> None:
         self.entries.append((section_name, entry))
+
+
+class FakeMainMenu:
+    def __init__(self) -> None:
+        self.submenus: list[FakeSubMenu] = []
+
+    def add_sub_menu(self, **_: object) -> FakeSubMenu:
+        submenu = FakeSubMenu()
+        self.submenus.append(submenu)
+        return submenu
 
 
 class FakeToolMenusManager:
@@ -41,7 +52,7 @@ class FakeToolMenusManager:
         self.refreshed = False
 
     def extend_menu(self, name: str) -> FakeMainMenu:
-        assert name == 'LevelEditor.MainMenu.Tools'
+        assert name == 'LevelEditor.MainMenu'
         return self.main_menu
 
     def refresh_all_widgets(self) -> None:
@@ -72,7 +83,7 @@ class FakePaths:
 
 class LoaderTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.python_dir = ROOT
+        self.content_dir = ROOT / 'Content'
         self.logs: list[str] = []
         self.warnings: list[str] = []
         self.errors: list[str] = []
@@ -81,7 +92,7 @@ class LoaderTests(unittest.TestCase):
         self.next_handle = 1
 
         fake_unreal = types.ModuleType('unreal')
-        fake_unreal.Paths = FakePaths(self.python_dir)
+        fake_unreal.Paths = FakePaths(self.content_dir)
         fake_unreal.MultiBlockType = types.SimpleNamespace(MENU_ENTRY='MENU_ENTRY')
         fake_unreal.ToolMenuStringCommandType = types.SimpleNamespace(PYTHON='PYTHON')
         fake_unreal.ToolMenuEntry = FakeToolMenuEntry
@@ -103,7 +114,7 @@ class LoaderTests(unittest.TestCase):
         fake_unreal.unregister_slate_pre_tick_callback = unregister_slate_pre_tick_callback
         sys.modules['unreal'] = fake_unreal
 
-        content_python = str(self.python_dir)
+        content_python = str(self.content_dir / 'Python')
         if content_python not in sys.path:
             sys.path.insert(0, content_python)
 
@@ -112,7 +123,7 @@ class LoaderTests(unittest.TestCase):
     def tearDown(self) -> None:
         self._purge_modules()
         sys.modules.pop('unreal', None)
-        content_python = str(self.python_dir)
+        content_python = str(self.content_dir / 'Python')
         if content_python in sys.path:
             sys.path.remove(content_python)
 
@@ -122,7 +133,7 @@ class LoaderTests(unittest.TestCase):
                 sys.modules.pop(name, None)
 
     def test_init_unreal_finds_and_registers_package(self) -> None:
-        loader_path = ROOT / 'init_unreal.py'
+        loader_path = ROOT / 'Content' / 'Python' / 'init_unreal.py'
         spec = importlib.util.spec_from_file_location('init_unreal_test', loader_path)
         module = importlib.util.module_from_spec(spec)
         assert spec and spec.loader
@@ -133,13 +144,6 @@ class LoaderTests(unittest.TestCase):
         self.assertEqual(self.errors, [])
         self.assertTrue(self.callbacks)
 
-    def test_runtime_files_exist_in_repo_root(self) -> None:
-        self.assertTrue((ROOT / 'init_unreal.py').exists())
-        self.assertTrue((ROOT / 'uefn_test_tool' / '__init__.py').exists())
-        self.assertTrue((ROOT / 'uefn_test_tool' / 'actions.py').exists())
-        self.assertTrue((ROOT / 'uefn_test_tool' / 'asset_browser.py').exists())
-        self.assertTrue((ROOT / 'uefn_test_tool' / 'menu.py').exists())
-
     def test_scheduled_menu_builds_entries(self) -> None:
         import uefn_test_tool
 
@@ -147,17 +151,11 @@ class LoaderTests(unittest.TestCase):
         callback = next(iter(self.callbacks.values()))
         callback(0.0)
 
-        self.assertTrue(any('Menu entries registered under Tools > Python.' in message for message in self.logs))
+        self.assertTrue(any('Menu registered under LevelEditor.MainMenu.' in message for message in self.logs))
         self.assertTrue(self.manager.refreshed)
-        labels = [entry.label for _, entry in self.manager.main_menu.entries]
-        self.assertEqual(
-            labels,
-            [
-                'UEFN Test Tool: Log Python Environment',
-                'UEFN Test Tool: Browse Selected Folder Assets',
-                'UEFN Test Tool: Reload Package',
-            ],
-        )
+        submenu = self.manager.main_menu.submenus[0]
+        labels = [entry.label for _, entry in submenu.entries]
+        self.assertEqual(labels, ['Log Python Environment', 'Reload Package'])
 
 
 if __name__ == '__main__':
